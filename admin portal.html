@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasan Cyber Cafe - Admin Control Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { sans: ['Poppins', 'sans-serif'] } } }
+        }
+    </script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
+
+    <!-- LOGIN MODAL -->
+    <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4">
+        <div class="bg-slate-800 border border-slate-700 w-full max-w-md p-8 rounded-3xl shadow-2xl text-center space-y-6">
+            <div class="w-16 h-16 bg-cyan-500/20 text-cyan-400 rounded-2xl flex items-center justify-center text-3xl mx-auto">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-black text-white">Admin Login</h2>
+                <p class="text-slate-400 text-sm mt-1">Hasan Cyber Cafe Control Panel</p>
+            </div>
+            <form onsubmit="handleLogin(event)" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 uppercase mb-2">Admin Password</label>
+                    <input type="password" id="adminPass" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500" placeholder="Enter password...">
+                </div>
+                <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-extrabold py-3.5 rounded-xl transition shadow-lg shadow-cyan-500/20">
+                    Login to Dashboard
+                </button>
+            </form>
+            <p class="text-xs text-slate-500">Default Password: <code class="text-cyan-400">hasan123</code></p>
+        </div>
+    </div>
+
+    <!-- MAIN ADMIN DASHBOARD -->
+    <div id="adminDashboard" class="hidden min-h-screen flex flex-col">
+        <!-- TOPBAR -->
+        <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex justify-between items-center sticky top-0 z-40">
+            <div class="flex items-center gap-3">
+                <div class="bg-cyan-500 text-slate-950 p-2 rounded-lg font-bold"><i class="fa-solid fa-gauge-high"></i></div>
+                <h1 class="text-xl font-black tracking-wide text-white">Hasan Cyber Cafe <span class="text-cyan-400 text-xs px-2 py-1 bg-cyan-500/10 rounded border border-cyan-500/20 ml-2">ADMIN PANEL</span></h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="index.html" target="_blank" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2">
+                    <i class="fa-solid fa-globe"></i> View Public Site
+                </a>
+                <button onclick="logout()" class="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white px-4 py-2 rounded-xl text-sm font-bold transition">
+                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                </button>
+            </div>
+        </header>
+
+        <!-- DASHBOARD BODY -->
+        <main class="max-w-6xl mx-auto px-4 py-10 w-full flex-1 space-y-8">
+            
+            <!-- SUCCESS MESSAGE NOTIFICATION -->
+            <div id="successAlert" class="hidden bg-emerald-500 text-slate-950 font-bold px-6 py-4 rounded-2xl shadow-lg flex items-center justify-between">
+                <span><i class="fa-solid fa-circle-check mr-2"></i> Update Successful! Changes are now live on your main website.</span>
+                <button onclick="this.parentElement.classList.add('hidden')" class="text-slate-950 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- MANAGE LOGO -->
+            <div class="bg-slate-800 border border-slate-700 rounded-3xl p-6 md:p-8 shadow-xl">
+                <h2 class="text-2xl font-black text-white mb-2 flex items-center gap-2"><i class="fa-solid fa-image text-cyan-400"></i> Set Website Logo</h2>
+                <form onsubmit="saveLogo(event)" class="space-y-4">
+                    <input type="file" id="logoImageFile" accept="image/*" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-300 file:bg-cyan-500 file:text-slate-950 file:rounded-lg file:border-0 file:py-2 file:px-4 cursor-pointer">
+                    <button type="submit" class="bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-black px-6 py-3 rounded-xl transition">Update Logo Live</button>
+                </form>
+            </div>
+
+            <!-- MANAGE GALLERY PHOTOS -->
+            <div class="bg-slate-800 border border-slate-700 rounded-3xl p-6 md:p-8 shadow-xl space-y-6">
+                <h2 class="text-2xl font-black text-white flex items-center gap-2"><i class="fa-solid fa-images text-purple-400"></i> Manage Cafe Gallery Photos</h2>
+                <p class="text-slate-400 text-sm">Upload new photos or delete existing ones from the gallery slideshow.</p>
+                
+                <form onsubmit="saveGallery(event)" class="space-y-4">
+                    <input type="file" id="galleryImagesFile" accept="image/*" multiple required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-300 file:bg-purple-500 file:text-white file:rounded-lg file:border-0 file:py-2 file:px-4 cursor-pointer">
+                    <button type="submit" class="bg-purple-500 hover:bg-purple-600 text-white font-black px-6 py-3 rounded-xl transition">Upload</button>
+                </form>
+
+                <div>
+                    <h3 class="text-sm font-bold text-slate-300 mb-3">Current Gallery Photos (Click to Delete)</h3>
+                    <div id="adminGalleryGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+                </div>
+            </div>
+
+            <!-- MANAGE PAYMENT QR CODE -->
+            <div class="bg-slate-800 border border-slate-700 rounded-3xl p-6 md:p-8 shadow-xl">
+                <h2 class="text-2xl font-black text-white mb-2 flex items-center gap-2"><i class="fa-solid fa-qrcode text-emerald-400"></i> Set Payment QR Code & UPI ID</h2>
+                <form onsubmit="savePaymentQR(event)" class="space-y-4">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <input type="text" id="adminUpiId" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white" placeholder="7407324696@paytm">
+                        <input type="file" id="adminQrFile" accept="image/*" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-300 file:bg-emerald-500 file:text-slate-950 file:rounded-lg file:border-0 file:py-2 file:px-4 cursor-pointer">
+                    </div>
+                    <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black px-6 py-3 rounded-xl transition">Update Payment QR Live</button>
+                </form>
+            </div>
+
+            <!-- MANAGE LIVE NOTICES -->
+            <div class="bg-slate-800 border border-slate-700 rounded-3xl p-6 md:p-8 shadow-xl">
+                <h2 class="text-2xl font-black text-white mb-2 flex items-center gap-2"><i class="fa-solid fa-bullhorn text-cyan-400"></i> Manage Live Notices</h2>
+                <form onsubmit="saveNotice(event)" class="space-y-4">
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <select id="noticeSlot" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white">
+                            <option value="0">Notice 1</option>
+                            <option value="1">Notice 2</option>
+                            <option value="2">Notice 3</option>
+                        </select>
+                        <input type="text" id="noticeTitle" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white" placeholder="Notice Title">
+                        <input type="date" id="noticeExpiry" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white">
+                    </div>
+                    <input type="file" id="noticeImageFile" accept="image/*" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-300 file:bg-cyan-500 file:text-slate-950 file:rounded-lg file:border-0 file:py-2 file:px-4 cursor-pointer">
+                    <div class="flex gap-4">
+                        <button type="submit" class="bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-black px-6 py-3 rounded-xl transition">Update Notice Live</button>
+                        <button type="button" onclick="deleteNotice()" class="bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white font-black px-6 py-3 rounded-xl transition">Delete Notice</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function handleLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPass').value;
+            if (pass === 'hasan123') {
+                localStorage.setItem('hasanAdminAuth', 'true');
+                document.getElementById('loginModal').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                loadAdminData();
+            } else {
+                alert('ভুল পাসওয়ার্ড! (hasan123)');
+            }
+        }
+
+        window.onload = function() {
+            if (localStorage.getItem('hasanAdminAuth') === 'true') {
+                document.getElementById('loginModal').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                loadAdminData();
+            }
+        }
+
+        function showSuccess() {
+            const alertBox = document.getElementById('successAlert');
+            alertBox.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => alertBox.classList.add('hidden'), 4000);
+        }
+
+        function loadAdminData() {
+            const savedUpi = localStorage.getItem('hasanUpiId');
+            if (savedUpi) document.getElementById('adminUpiId').value = savedUpi;
+            renderAdminGallery();
+        }
+
+        function renderAdminGallery() {
+            const grid = document.getElementById('adminGalleryGrid');
+            const gallery = JSON.parse(localStorage.getItem('hasanGallery') || '[]');
+            if (gallery.length === 0) {
+                grid.innerHTML = '<p class="text-xs text-slate-400 col-span-4">No custom gallery photos uploaded yet.</p>';
+                return;
+            }
+            let html = '';
+            gallery.forEach((img, idx) => {
+                html += `
+                    <div class="relative group rounded-xl overflow-hidden h-28 border border-slate-700 bg-black">
+                        <img src="${img}" class="w-full h-full object-contain">
+                        <button onclick="removeGalleryPhoto(${idx})" class="absolute inset-0 bg-red-600/80 text-white font-bold opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-trash mr-1"></i> Delete
+                        </button>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+
+        function removeGalleryPhoto(index) {
+            let gallery = JSON.parse(localStorage.getItem('hasanGallery') || '[]');
+            gallery.splice(index, 1);
+            localStorage.setItem('hasanGallery', JSON.stringify(gallery));
+            renderAdminGallery();
+            showSuccess();
+        }
+
+        function logout() {
+            localStorage.removeItem('hasanAdminAuth');
+            location.reload();
+        }
+
+        function saveLogo(e) {
+            e.preventDefault();
+            const file = document.getElementById('logoImageFile').files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                localStorage.setItem('hasanLogo', e.target.result);
+                showSuccess();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveGallery(e) {
+            e.preventDefault();
+            const files = document.getElementById('galleryImagesFile').files;
+            let gallery = JSON.parse(localStorage.getItem('hasanGallery') || '[]');
+            let count = 0;
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    gallery.push(e.target.result);
+                    count++;
+                    if (count === files.length) {
+                        localStorage.setItem('hasanGallery', JSON.stringify(gallery));
+                        renderAdminGallery();
+                        showSuccess();
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function savePaymentQR(e) {
+            e.preventDefault();
+            const upi = document.getElementById('adminUpiId').value.trim();
+            const file = document.getElementById('adminQrFile').files[0];
+            localStorage.setItem('hasanUpiId', upi);
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    localStorage.setItem('hasanQrImage', e.target.result);
+                    showSuccess();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                showSuccess();
+            }
+        }
+
+        function saveNotice(e) {
+            e.preventDefault();
+            const slot = document.getElementById('noticeSlot').value;
+            const title = document.getElementById('noticeTitle').value;
+            const expiry = document.getElementById('noticeExpiry').value;
+            const file = document.getElementById('noticeImageFile').files[0];
+            let notices = JSON.parse(localStorage.getItem('hasanNotices') || '[]');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    notices[slot] = { title, expiry, image: e.target.result };
+                    localStorage.setItem('hasanNotices', JSON.stringify(notices));
+                    showSuccess();
+                };
+                reader.readAsDataURL(file);
+            } else if (notices[slot]) {
+                notices[slot].title = title;
+                notices[slot].expiry = expiry;
+                localStorage.setItem('hasanNotices', JSON.stringify(notices));
+                showSuccess();
+            } else {
+                alert('Please select an image for the notice.');
+            }
+        }
+
+        function deleteNotice() {
+            const slot = document.getElementById('noticeSlot').value;
+            let notices = JSON.parse(localStorage.getItem('hasanNotices') || '[]');
+            notices[slot] = null;
+            localStorage.setItem('hasanNotices', JSON.stringify(notices));
+            showSuccess();
+        }
+    </script>
+</body>
+</html>
